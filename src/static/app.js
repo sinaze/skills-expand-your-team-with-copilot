@@ -472,6 +472,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Helper: get a stable share-panel DOM id for an activity
+  function getActivityPanelId(name) {
+    return `share-panel-${name.replace(/\s+/g, '-')}`;
+  }
+
+  // Helper: build a shareable text for an activity
+  function buildShareText(name, details, separator = " ") {
+    return `Check out "${name}" at Mergington High School!${separator}${details.description}${separator}Schedule: ${formatSchedule(details)}`;
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -568,6 +578,15 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <button class="share-button" data-activity="${name}" aria-label="Share this activity">
+          🔗 Share
+        </button>
+      </div>
+      <div class="share-panel hidden" id="${getActivityPanelId(name)}">
+        <span class="share-panel-label">Share via:</span>
+        <a class="share-link share-twitter" href="#" data-activity="${name}" aria-label="Share on X (Twitter)">𝕏 X</a>
+        <a class="share-link share-facebook" href="#" data-activity="${name}" aria-label="Share on Facebook">Facebook</a>
+        <button class="share-link share-copy" data-activity="${name}" aria-label="Copy link">📋 Copy Link</button>
       </div>
     `;
 
@@ -587,7 +606,60 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add click handler for share button
+    const shareButton = activityCard.querySelector(".share-button");
+    shareButton.addEventListener("click", () => {
+      shareActivity(name, details, activityCard);
+    });
+
+    // Add click handlers for share panel links
+    const twitterLink = activityCard.querySelector(".share-twitter");
+    twitterLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      const text = buildShareText(name, details, " ");
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    });
+
+    const facebookLink = activityCard.querySelector(".share-facebook");
+    facebookLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank", "noopener,noreferrer");
+    });
+
+    const copyButton = activityCard.querySelector(".share-copy");
+    copyButton.addEventListener("click", () => {
+      const text = `${buildShareText(name, details, "\n")}\n${window.location.href}`;
+      navigator.clipboard.writeText(text).then(() => {
+        copyButton.textContent = "✅ Copied!";
+        setTimeout(() => { copyButton.textContent = "📋 Copy Link"; }, 2000);
+      }).catch(() => {
+        copyButton.textContent = "⚠️ Failed";
+        setTimeout(() => { copyButton.textContent = "📋 Copy Link"; }, 2000);
+      });
+    });
+
     activitiesList.appendChild(activityCard);
+  }
+
+  // Function to toggle the share panel for an activity card
+  function shareActivity(name, details, card) {
+    const sharePanel = card.querySelector(`#${getActivityPanelId(name)}`);
+
+    // If Web Share API is supported, use it directly
+    if (navigator.share) {
+      navigator.share({
+        title: `${name} — Mergington High School`,
+        text: buildShareText(name, details, " "),
+        url: window.location.href,
+      }).catch(() => {
+        // User cancelled or error — fall back to panel
+        sharePanel.classList.toggle("hidden");
+      });
+      return;
+    }
+
+    // Fallback: toggle the share options panel
+    sharePanel.classList.toggle("hidden");
   }
 
   // Event listeners for search and filter
