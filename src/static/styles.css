@@ -187,7 +187,9 @@ section h3 {
   margin-top: auto;
   padding-top: 10px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
 }
 
 /* Activity Tag */
@@ -652,6 +654,78 @@ footer {
 
 .user-icon {
   font-size: 1rem;
+}
+
+/* Social sharing */
+.share-button {
+  background-color: var(--background);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.share-button:hover {
+  background-color: var(--primary-light);
+  color: white;
+  border-color: var(--primary-light);
+}
+
+.share-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 0 2px;
+  border-top: 1px solid var(--border-light);
+}
+
+.share-panel-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.share-link {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+.share-link:hover {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.share-twitter {
+  color: #1da1f2;
+  border-color: #1da1f2;
+}
+
+.share-twitter:hover {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.share-facebook {
+  color: #1877f2;
+  border-color: #1877f2;
+}
+
+.share-facebook:hover {
+  background-color: #1877f2;
+  color: white;
 }
 
 #logout-button {
